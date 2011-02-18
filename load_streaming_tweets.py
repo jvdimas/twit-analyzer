@@ -9,14 +9,17 @@ import tweepy # Twitter API class: http://github.com/joshthecoder/tweepy
 
 # StreamListener to import tweets into db
 import StreamWatcherMongoDB
+import StreamWatcherSQLite
 import settings
+import pw # temporary file that stores password info...
+# ToDo: store this information in a db file instead...
 
 def main(*args):
   print "Attempting to authorize with Twitter"
   # Attempt to authorize app with Twitter
   auth = tweepy.OAuthHandler(settings.CONSUMER_TOKEN, settings.CONSUMER_SECRET) # app keys
   # Consumer keys, ToDo: Store in database
-  auth.set_access_token(settings.ACCESS_TOKEN_KEY, settings.ACCESS_TOKEN_SECRET) # user specific
+  auth.set_access_token(pw.ACCESS_TOKEN_KEY, pw.ACCESS_TOKEN_SECRET) # user specific
   
   # Infinite loop so connection is reestablished in case of network error
   while True:
@@ -33,7 +36,8 @@ def main(*args):
     
 # Construct streaming object from auth and print infinite tweets
 def listen_to_stream(auth):
-  listener = StreamWatcherMongoDB.StreamWatcherMongoDB()
+  #listener = StreamWatcherMongoDB.StreamWatcherMongoDB()
+  listener = StreamWatcherSQLite.StreamWatcherSQLite()
   stream = Stream(auth, listener)
   print "Sampling Stream..."
   stream.sample()

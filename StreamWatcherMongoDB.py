@@ -64,7 +64,7 @@ class StreamWatcherMongoDB(lib.streaming.StreamListener):
       'user_statuses_count': tweet.author.statuses_count,
       'analyzed': False,
     }
-      
+
     #insert into db
     try:
       #print self.DB_NAME
