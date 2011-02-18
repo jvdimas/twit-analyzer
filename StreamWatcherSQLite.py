@@ -34,7 +34,7 @@ class StreamWatcherSQLite(lib.streaming.StreamListener):
   def create_tables(self):
     try:
       print "Creating database...",
-      cmd = "CREATE TABLE tweets(author TEXT, text TEXT, created_at TIMESTAMP, geo TEXT)"
+      cmd = "CREATE TABLE tweets(author TEXT, text TEXT, created_at TIMESTAMP, geo TEXT, user_lang TEXT)"
       self.cursor.execute(cmd)
       self.db.commit()
       print "done."
@@ -83,9 +83,9 @@ class StreamWatcherSQLite(lib.streaming.StreamListener):
       
     #insert into db
     try:
-      cmd = """INSERT INTO tweets(author, text, created_at, geo) VALUES ("%s",
-      "%s", "%s", "%s")""" % (tweet.author.screen_name, tweet.text,
-                              tweet.created_at, tweet.geo)
+      cmd = """INSERT INTO tweets(author, text, created_at, geo, user_lang) VALUES ("%s",
+      "%s", "%s", "%s", "%s")""" % (tweet.author.screen_name, tweet.text,
+      tweet.created_at, tweet.geo, tweet.author.lang)
 
       self.cursor.execute(cmd)
       self.db.commit()
