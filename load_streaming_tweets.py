@@ -2,7 +2,7 @@
 
 import sys, os
 import subprocess
-import sqlite3
+import pickle
 
 # version of tweepy installed has some issues in Streaming fixed here
 from lib.streaming import StreamListener, Stream 
@@ -12,18 +12,13 @@ import tweepy # Twitter API class: http://github.com/joshthecoder/tweepy
 import StreamWatcherMongoDB
 import StreamWatcherSQLite
 import settings
-import pw # temporary file that stores password info...
-# ToDo: store this information in a db file instead...
 
 def main(*args):
-  
-
-
   print "Attempting to authorize with Twitter"
   # Attempt to authorize app with Twitter
   auth = tweepy.OAuthHandler(settings.CONSUMER_TOKEN, settings.CONSUMER_SECRET) # app keys
   # Consumer keys, ToDo: Store in database
-  auth.set_access_token(pw.ACCESS_TOKEN_KEY, pw.ACCESS_TOKEN_SECRET) # user specific
+  auth.set_access_token(settings.ACCESS_TOKEN_KEY, settings.ACCESS_TOKEN_SECRET) # user specific
   
   # Infinite loop so connection is reestablished in case of network error
   while True:
@@ -57,6 +52,8 @@ def authorize_user(auth):
   print "Requesting access token..."
   auth.get_access_token(verifier)
   
+  pickle.dump( (auth.access_token.key, auth.access_token.secret),
+              open('settings_twitter_creds', 'w'))
   print "Key: " + auth.access_token.key
   print "Secret: " + auth.access_token.secret
   return auth

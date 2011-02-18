@@ -38,7 +38,7 @@ class StreamWatcherSQLite(lib.streaming.StreamListener):
   # Creates db tables
   def create_tables(self):
     try:
-      print "Creating database...",
+      print "Creating auth database...",
       cmd = "CREATE TABLE tweets(author TEXT, text TEXT, created_at TIMESTAMP, geo TEXT, user_lang TEXT)"
       self.cursor.execute(cmd)
       self.db.commit()
