@@ -2,6 +2,7 @@
 # Stores data in an SQLite database, rotated daily
 
 import time
+import datetime
 
 import sqlite3
 
@@ -16,16 +17,20 @@ import pw # temporary password file...
 # StreamListener class implementation 
 # Listens to live feed of tweets loading them into the mongo db 
 class StreamWatcherSQLite(lib.streaming.StreamListener):
-  
   def __init__(self, api=None):
     self.api = api or tweepy.API()
     
     self.count = 0 # number of tweets loaded into db in last 60 seconds
     self.start_time = 0 #time execution starts, resets every 60 seconds
     
+    self.initialize_db() # setup the db
+
+  # Initialize db
+  def initialize_db(self):
     # Open db connection
-    self.db = sqlite3.connect('tweets.db') # ToDo: rotate db file daily 
+    self.db = sqlite3.connect(self.get_db_name())    
     self.cursor = self.db.cursor()
+    self.day = datetime.datetime.now().day
 
     # Create db tables
     self.create_tables()
@@ -50,37 +55,13 @@ class StreamWatcherSQLite(lib.streaming.StreamListener):
       self.start_time = time.time()
       print "%d tweets recieved in the last minute." % self.count
       self.count = 0
-    
-    # get tweet attributes
-    #t = {
-      #'author': tweet.author.screen_name,
-      # 'contributors': tweet.contributors,
-      # 'coordinates': tweet.coordinates,
-      # 'created_at': tweet.created_at,
-      # 'destroy': tweet.destroy,
-      # 'favorite': tweet.favorite,
-      # 'favorited': tweet.favorited,
-      # 'geo': tweet.geo,
-      # 'id': tweet.id,
-      # 'in_reply_to_screen_name': tweet.in_reply_to_screen_name,
-      # 'in_reply_to_status_id': tweet.in_reply_to_status_id,
-      # 'in_reply_to_user_id': tweet.in_reply_to_user_id,
-      # 'parse': tweet.parse,
-      # 'parse_list': tweet.parse_list,
-      # 'place': tweet.place,
-      # 'retweet': dir(tweet.retweet),
-      # 'retweets': dir(tweet.retweets),
-      # 'source': tweet.source,
-      # 'source_url': tweet.source_url,
-      # 'text': tweet.text,
-      # 'truncated': tweet.truncated,
-      # 'user': tweet.user.screen_name,
-      # 'user_lang': tweet.author.lang,
-      # 'user_location': tweet.author.location,
-      # 'user_statuses_count': tweet.author.statuses_count,
-      # 'analyzed': False,
-    #}
-      
+
+      # Now check to see if a day is elapsed
+      # If one has we need to rotate into a new db file
+      if datetime.datetime.now().day != self.day:
+        self.day = datetime.datetime.now().day
+        self.initialize_db() 
+       
     #insert into db
     try:
       cmd = """INSERT INTO tweets(author, text, created_at, geo, user_lang) VALUES ("%s",
@@ -103,3 +84,9 @@ class StreamWatcherSQLite(lib.streaming.StreamListener):
     print 'Timeout...'
     self.start_time = 0
     return False
+
+  # Returns name to use for the db
+  # Changes based on current date
+  def get_db_name(self):
+    now = datetime.datetime.now()
+    return "db/tweets-%s-%s-%s.db" % (now.year, now.day, now.month) 

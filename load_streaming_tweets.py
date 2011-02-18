@@ -2,6 +2,7 @@
 
 import sys, os
 import subprocess
+import sqlite3
 
 # version of tweepy installed has some issues in Streaming fixed here
 from lib.streaming import StreamListener, Stream 
@@ -15,6 +16,9 @@ import pw # temporary file that stores password info...
 # ToDo: store this information in a db file instead...
 
 def main(*args):
+  
+
+
   print "Attempting to authorize with Twitter"
   # Attempt to authorize app with Twitter
   auth = tweepy.OAuthHandler(settings.CONSUMER_TOKEN, settings.CONSUMER_SECRET) # app keys
