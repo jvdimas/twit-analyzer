@@ -89,4 +89,4 @@ class StreamWatcherSQLite(lib.streaming.StreamListener):
   # Changes based on current date
   def get_db_name(self):
     now = datetime.datetime.now()
-    return "db/tweets-%s-%s-%s.db" % (now.year, now.day, now.month) 
+    return "db/tweets-%s-%s-%s.db" % (now.year, now.month, now.day) 
