@@ -17,9 +17,9 @@ def main(*args):
   print "Attempting to authorize with Twitter"
   # Attempt to authorize app with Twitter
   auth = tweepy.OAuthHandler(settings.CONSUMER_TOKEN, settings.CONSUMER_SECRET) # app keys
-  # Consumer keys, ToDo: Store in database
-  auth.set_access_token(settings.ACCESS_TOKEN_KEY, settings.ACCESS_TOKEN_SECRET) # user specific
-  
+  # Consumer keys, these are user specific
+  auth.set_access_token(settings.ACCESS_TOKEN_KEY, settings.ACCESS_TOKEN_SECRET)  
+
   # Infinite loop so connection is reestablished in case of network error
   while True:
     try:
@@ -52,10 +52,9 @@ def authorize_user(auth):
   print "Requesting access token..."
   auth.get_access_token(verifier)
   
+  print "Saving auth details..."
   pickle.dump( (auth.access_token.key, auth.access_token.secret),
               open('settings_twitter_creds', 'w'))
-  print "Key: " + auth.access_token.key
-  print "Secret: " + auth.access_token.secret
   return auth
 
 if __name__ == '__main__':

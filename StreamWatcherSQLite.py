@@ -11,8 +11,6 @@ import lib.streaming
 import tweepy
 # import tweepy # Twitter API class: http://github.com/joshthecoder/tweepy
 
-import settings
-import pw # temporary password file... 
 
 # StreamListener class implementation 
 # Listens to live feed of tweets loading them into the mongo db 
@@ -64,11 +62,9 @@ class StreamWatcherSQLite(lib.streaming.StreamListener):
        
     #insert into db
     try:
-      cmd = """INSERT INTO tweets(author, text, created_at, geo, user_lang) VALUES ("%s",
-      "%s", "%s", "%s", "%s")""" % (tweet.author.screen_name, tweet.text,
-      tweet.created_at, tweet.geo, tweet.author.lang)
-
-      self.cursor.execute(cmd)
+      t = (tweet.author.screen_name, tweet.text, tweet.created_at, tweet.geo,
+           tweet.author.lang)
+      self.cursor.execute('INSERT INTO tweets VALUES (?, ?, ?, ?, ?)', t)
       self.db.commit()
       self.count += 1
     except:
