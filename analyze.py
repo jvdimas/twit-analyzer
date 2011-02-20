@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import sys, os, datetime
 import sqlite3
+import matplotlib.pyplot as plt
 
 import TweetAnalyzer
 
@@ -13,6 +14,10 @@ def main(*args):
   dbList = os.listdir('db')
 
   for db_name in dbList:
+    # Ignore files that are not databases...
+    if not db_name.endswith('.db'):
+      continue
+    
     # Open the db
     print "Opening " + db_name + "...",
     conn = sqlite3.connect('db/' + db_name)
@@ -37,8 +42,17 @@ def main(*args):
     except:
       score_dict[format_dt(dt)] = [s[1],]
 
-  for min in score_dict:
-    print min + ": " + str(analyzer.average_scores(score_dict[min]))
+  x_pts = []
+  y_pts = []
+  for t in score_dict:
+    #print t + ": " + str(analyzer.average_scores(score_dict[t]))
+    y_pts.append(analyzer.average_scores(score_dict[t]))
+    x_pts.append(t)
+
+  plt.plot(y_pts)
+  plt.xlabel('minute')
+  plt.ylabel('number of tweets')
+  plt.show()
 
 def format_dt(dt):
   return dt.strftime("%Y-%m-%d %H:%M")
