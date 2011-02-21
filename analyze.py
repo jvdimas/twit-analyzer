@@ -52,8 +52,8 @@ def main(*args):
 
   print "Plotting..."
   plt.plot(y_pts)
-  plt.xlabel('minute')
-  plt.ylabel('number of tweets')
+  plt.xlabel('t')
+  plt.ylabel('score')
   plt.show()
 
 def format_dt(dt):
