@@ -56,6 +56,10 @@ def main(*args):
   plt.ylabel('score')
   plt.show()
 
+  print "Plotting histogram..."
+  plt.hist(y_pts, 25)
+  plt.show()
+
 def format_dt(dt):
   return dt.strftime("%Y-%m-%d %H:%M") # ("%Y-%m-%d %H:%M")
 
