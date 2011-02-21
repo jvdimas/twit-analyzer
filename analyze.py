@@ -3,12 +3,13 @@ import sys, os, datetime
 import sqlite3
 import matplotlib.pyplot as plt
 
-import TweetAnalyzer
+import TweetAnalyzer 
+import AnalyzerPercentEnglish 
 
 def main(*args):
-  analyzer = TweetAnalyzer.TweetAnalyzer()
+  #analyzer = TweetAnalyzer.TweetAnalyzer()
+  analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish() 
   scores = []
-  t = 60 # seconds
 
   # Find all db files available...
   dbList = os.listdir('db')
@@ -49,13 +50,14 @@ def main(*args):
     y_pts.append(analyzer.average_scores(score_dict[t]))
     x_pts.append(t)
 
+  print "Plotting..."
   plt.plot(y_pts)
   plt.xlabel('minute')
   plt.ylabel('number of tweets')
   plt.show()
 
 def format_dt(dt):
-  return dt.strftime("%Y-%m-%d %H:%M")
+  return dt.strftime("%Y-%m-%d %H:%M") # ("%Y-%m-%d %H:%M")
 
 if __name__ == '__main__':
   try:

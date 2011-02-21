@@ -1,1 +1,72 @@
+
+!! Motivation
+
+With the expansion of social websites like Facebook and Twitter users are putting a tremendous amount of personal data onto the web in publically accessible and machine readable formats. Information is the currency of our age and analyzing these vast datasources can be analyzed to find potentially interesting or valuable trends.
+
+Twitter provides an API that allows anyone to access ~1% of all public tweets in realtime (700-1100 tweets per minute). I propose that we develop a framework of tools to analyze these tweets to determine both historical and realtime trends.
+
+!! Framework
+
+I have already put some effort into the development of a framework that we can use. The code is available on [[https://github.com/jvdimas/twit-analyzer | github]]. There are two core components. The first is [[https://github.com/jvdimas/twit-analyzer/blob/master/load_streaming_tweets.py | @@load_streaming_tweets.py@@]]. This code authenticates with Twitter and then listens to the realtime stream of tweets. For every tweet it receives it stores the author's username, timestamp, tweet contents, user language, and geotag in an sqlite database. The databases are rotated daily to ensure reasonable file sizes. A days worth of tweets is ~100-150mb. There is also a version that uses the NoSQL db [[http://www.mongodb.org/ | mongodb]] to store tweets. While cool, this was probably the worst possible choice for a large amount of infrequently accessed data... I have been running @@load_streaming_tweets.py@@ for the last several days and have about 400mb of data to play with.
+
+The second major component is [[https://github.com/jvdimas/twit-analyzer/blob/master/analyze.py | @@analyze.py@@]]. I have tried to separate the backend process of loading the tweets from the database files from the logic of assigning "scores" to tweets. @@analyze.py@@ handles loading all the tweets, breaking into time buckets, and creating the graphs. The actual logic comes from classes inheriting [[https://github.com/jvdimas/twit-analyzer/blob/master/TweetAnalyzer.py | @@TweetAnalyzer.py@@]] that @@analyze.py@@ imports. This makes writing new classes that can analyze Tweets very simple. The person writing these classes needs to know very little about how the backend system is actually working.
+
+
+Note: to run the code you must install the tweepy Python module (can be done with sudo easy_install tweepy). To run analyze.py and get pretty graphs you must have [[http://matplotlib.sourceforge.net/ | matplotlib]] installed (numpy is a dependency). You may need @@mkdir db@@.
+
+!! Writing @@TweetAnalyzer@@ Classes
+
+To write a class capable of analyzing tweets you just need to implement two methods: @@score_tweet(tweet)@@ and @@average_scores(scores)@@. The first method is given a 5-tuple @@(author, tweet text, created_at timestamp, geo data, user_lang)@@. It returns the "score" for that tweet. The second method is given a list of scores and returns the "average" of those scores. (@@analyze.py@@ looks at all tweets in a given time period (the default is 60 seconds) and plots the averages).
+
+For example, lets say we want to write a simple @@TweetAnalyzer@@ that just counts the number of tweets received in each time bucket. (This is actually the default behavior.) 
+
+(:source lang=python:)
+import TweetAnalyzer
+
+class TweetAnalyzerCount(TweetAnalyzer.TweetAnalyzer):
+  # Assign all tweets score 1
+  def score_tweet(self, tweet):
+    return 1
+
+  # Just return the sum
+  def average_scores(self, scores):
+    sum = 0
+    for s in scores:
+      sum += s
+    return sum
+(:sourcend:)
+
+Every tweet is given the score 1, and to "average" them we just return the sum. Thus, if in a given minute we receive 500 tweets, the "average" will be 500. 
+
+This is clearly trivial, so let's consider a slightly more complicated example. Lets say we want to determine the percent of tweets that are in english (well, at least the percent of tweets where the author has set their language to english).
+
+(:source lang=python:)
+import TweetAnalyzer
+
+class AnalyzerPercentEnglish(TweetAnalyzer.TweetAnalyzer):
+  def score_tweet(self, tweet):
+    if tweet[4] == 'en':
+      return 1
+    else:
+      return 0
+
+  def average_scores(self, scores):
+    n = 0
+    n_en = 0
+    for s in scores:
+      n += 1
+      n_en += s
+
+    return float(n_en)/n
+(:sourcend:)
+
+When we run this through @@analyze.py@@ with a small dataset (~18mb from ~3hrs of listening) we get the following graph:
+
+%width=1000px% http://home.uchicago.edu/~jvdimas/img/2.18-3hr-percentenglish.png
+
+Not terribly interesting, but I'm curious to see if you guys have any good ideas to analyze this kind of data. The next steps for me is to write some sort of primitive methods to try to classify tweets as either positive, negative, or neutral (based solely on word use). It might be interesting to see if there are any trends on positivity/negativity... Does this small subset of tweets serve as some sort of twisted proxy to quantify our emotional state? (Probably not...) 
+
+Note: Right now the only way to then use the @@TweetAnalyzer@@ class you wrote is to modify @@analyze.py@@ to use the class you write. To do so just make sure to @@import@@ it and then look for the line starting with @@analyzer = ...@@
+
+
 Thanks to Hillary Mason and her cl twitter client tc. Much of the code for connecting to Twitter was based off of it
