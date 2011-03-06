@@ -7,8 +7,8 @@ import TweetAnalyzer
 import AnalyzerPercentEnglish 
 
 def main(*args):
-  #analyzer = TweetAnalyzer.TweetAnalyzer()
-  analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish() 
+  analyzer = TweetAnalyzer.TweetAnalyzer()
+  #analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish() 
   scores = []
 
   # Find all db files available...
