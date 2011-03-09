@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Based heavily on 'wx_mpl_dynamic_graph.py,' an example of using matplotlib and
 wx to produce realtime graphs distributed by:
@@ -12,6 +14,7 @@ import sqlite3
 import datetime
 
 import TweetAnalyzer
+import AnalyzerPercentEnglish
 
 # The recommended way to use wx with mpl is with the WXAgg
 # backend. 
@@ -25,13 +28,14 @@ from matplotlib.backends.backend_wxagg import \
 import numpy as np
 import pylab
 
-UPDATE_INTERVAL = 5000 # in miliseconds 
+UPDATE_INTERVAL = 1000 # in milliseconds 
 
 class DataGen(object):
   def __init__(self, init=0):
     self.data = init
-    db_name = 'tweets-2011-3-5.db' # For testing only
-    self.analyzer = TweetAnalyzer.TweetAnalyzer()
+    db_name = 'tweets-2011-3-8.db' # For testing only
+    #self.analyzer = TweetAnalyzer.TweetAnalyzer()
+    self.analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish()
     self.cursor = sqlite3.connect('db/' + db_name).cursor()
         
   def next(self):
@@ -106,7 +110,7 @@ class BoundControlBox(wx.Panel):
 class GraphFrame(wx.Frame):
     """ The main frame of the application
     """
-    title = 'Demo: dynamic matplotlib graph'
+    title = 'wx_realtime'
     
     def __init__(self):
         wx.Frame.__init__(self, None, -1, self.title)
@@ -194,7 +198,7 @@ class GraphFrame(wx.Frame):
 
         self.axes = self.fig.add_subplot(111)
         self.axes.set_axis_bgcolor('black')
-        self.axes.set_title('Very important random data', size=12)
+        self.axes.set_title('Realtime Twitter Analysis', size=12)
         
         pylab.setp(self.axes.get_xticklabels(), fontsize=8)
         pylab.setp(self.axes.get_yticklabels(), fontsize=8)

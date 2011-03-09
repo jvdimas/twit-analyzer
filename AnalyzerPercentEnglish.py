@@ -13,5 +13,8 @@ class AnalyzerPercentEnglish(TweetAnalyzer.TweetAnalyzer):
     for s in scores:
       n += 1
       n_en += s
-
-    return float(n_en)/n
+    
+    if n == 0:
+      return 0
+    else:
+      return float(n_en)/n
