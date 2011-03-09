@@ -2,13 +2,14 @@
 import sys, os, datetime
 import sqlite3
 import matplotlib.pyplot as plt
+import csv
 
 import TweetAnalyzer 
 import AnalyzerPercentEnglish 
 
 def main(*args):
-  analyzer = TweetAnalyzer.TweetAnalyzer()
-  #analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish() 
+  #analyzer = TweetAnalyzer.TweetAnalyzer()
+  analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish() 
   scores = []
 
   # Find all db files available...
@@ -59,6 +60,12 @@ def main(*args):
   print "Plotting histogram..."
   plt.hist(y_pts, 25)
   plt.show()
+
+  # Now write csv info to file...
+  print "Writing csv to file 'out.csv'"
+  writer = csv.writer(open("out.csv", "wb+"))
+  writer.writerow( ('date', 'score') )
+  writer.writerows( zip(x_pts, y_pts) )
 
 def format_dt(dt):
   return dt.strftime("%Y-%m-%d %H:%M") # ("%Y-%m-%d %H:%M")

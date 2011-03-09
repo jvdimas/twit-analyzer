@@ -44,10 +44,7 @@ class DataGen(object):
     
   def _recalc_data(self):
     # Get data for most recent tweets
-    print "....:"
-    
     now = datetime.datetime.utcnow()
-    print now
     self.cursor.execute("SELECT * from tweets WHERE created_at BETWEEN ? and ?",
                         (now -
                          datetime.timedelta(seconds=int(UPDATE_INTERVAL)/1000), now))
