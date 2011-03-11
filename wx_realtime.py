@@ -13,8 +13,8 @@ import wx
 import sqlite3
 import datetime
 
-import TweetAnalyzer
-import AnalyzerPercentEnglish
+import analyzers.TweetAnalyzer as TweetAnalyzer
+import analyzers.AnalyzerPercentEnglish as AnalyzerPercentEnglish
 
 # The recommended way to use wx with mpl is with the WXAgg
 # backend. 

@@ -4,8 +4,8 @@ import sqlite3
 import matplotlib.pyplot as plt
 import csv
 
-import TweetAnalyzer 
-import AnalyzerPercentEnglish 
+import analyzers.TweetAnalyzer as TweetAnalyzer
+import analyzers.AnalyzerPercentEnglish as AnalyzerPercentEnglish
 
 def main(*args):
   analyzer = TweetAnalyzer.TweetAnalyzer()
@@ -44,28 +44,12 @@ def main(*args):
     except:
       score_dict[format_dt(dt)] = [s[1],]
 
-  x_pts = []
-  y_pts = []
-  for t in score_dict:
-    #print t + ": " + str(analyzer.average_scores(score_dict[t]))
-    y_pts.append(analyzer.average_scores(score_dict[t]))
-    x_pts.append(t)
-
-  print "Plotting..."
-  plt.plot(y_pts)
-  plt.xlabel('t')
-  plt.ylabel('score')
-  plt.show()
-
-  print "Plotting histogram..."
-  plt.hist(y_pts, 25)
-  plt.show()
-
   # Now write csv info to file...
   print "Writing csv to file 'out.csv'"
   writer = csv.writer(open("out.csv", "wb+"))
   writer.writerow( ('date', 'score') )
-  writer.writerows( zip(x_pts, y_pts) )
+  for t in score_dict:
+    writer.writerow( date, score_dict[date] )
 
 def format_dt(dt):
   return dt.strftime("%Y-%m-%d %H:%M") # ("%Y-%m-%d %H:%M")
