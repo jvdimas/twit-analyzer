@@ -15,6 +15,8 @@ def main(*args):
   # Find all db files available...
   dbList = os.listdir('db')
 
+  # This is painfully slow. 
+  # ToDo: make it suck less
   for db_name in dbList:
     # Ignore files that are not databases...
     if not db_name.endswith('.db'):
