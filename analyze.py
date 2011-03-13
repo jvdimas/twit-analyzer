@@ -9,6 +9,8 @@ import analyzers.TweetAnalyzer as TweetAnalyzer
 import analyzers.AnalyzerPercentEnglish as AnalyzerPercentEnglish
 import analyzers.AnalyzerGeneralInq as AnalyzerGeneralInq
 
+# ToDo: multiple cores?
+
 def main(*args):
   #analyzer = TweetAnalyzer.TweetAnalyzer()
   #analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish() 
