@@ -7,7 +7,4 @@ class TweetAnalyzer(object):
 
   # Just return the sum
   def average_scores(self, scores):
-    sum = 0
-    for s in scores:
-      sum += s
-    return sum
+    sum(scores)

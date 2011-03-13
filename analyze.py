@@ -4,12 +4,15 @@ import sqlite3
 import matplotlib.pyplot as plt
 import csv
 
+# Analyzers!
 import analyzers.TweetAnalyzer as TweetAnalyzer
 import analyzers.AnalyzerPercentEnglish as AnalyzerPercentEnglish
+import analyzers.AnalyzerGeneralInq as AnalyzerGeneralInq
 
 def main(*args):
-  analyzer = TweetAnalyzer.TweetAnalyzer()
+  #analyzer = TweetAnalyzer.TweetAnalyzer()
   #analyzer = AnalyzerPercentEnglish.AnalyzerPercentEnglish() 
+  analyzer = AnalyzerGeneralInq.AnalyzerGeneralInq()
   scores = []
 
   # Find all db files available...
@@ -51,7 +54,7 @@ def main(*args):
   writer = csv.writer(open("out.csv", "wb+"))
   writer.writerow( ('date', 'score') )
   for t in score_dict:
-    writer.writerow( date, score_dict[date] )
+    writer.writerow( (t, analyzer.average_scores(score_dict[t])) )
 
 def format_dt(dt):
   return dt.strftime("%Y-%m-%d %H:%M") # ("%Y-%m-%d %H:%M")
