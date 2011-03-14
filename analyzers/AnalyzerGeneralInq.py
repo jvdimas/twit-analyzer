@@ -17,21 +17,27 @@ class AnalyzerGeneralInq(TweetAnalyzer.TweetAnalyzer):
     # claimed negative connotations
     # ToDo: currently only works if used in a script invoked from root directory
     # of source tree
+    print 'Building tries',
     self.pos = build_trie('analyzers/general_inquirer/TAGPos.txt')
     self.neg = build_trie('analyzers/general_inquirer/TAGNeg.txt')
+    print 'done'
 
   def score_tweet(self, tweet):
     score = 0
     # ToDo: This won't catch all nonenglish tweets. Find a better way
     if tweet[4] == 'en':
-      words = tweet[1].split(None)
-      for w in words:
-        w = w.upper() # pos and neg lists are all uppercase 
-        if self.pos.find(w):
-          score += 1
-        if self.neg.find(w):
-          score -= 1
-      return score
+      try:
+        words = tweet[1].split(None)
+        for w in words:
+          w = w.upper() # pos and neg lists are all uppercase 
+          if self.pos.find(w):
+            score += 1
+          if self.neg.find(w):
+            score -= 1
+        return score
+      # Some tweets are blank, give them a 0 score
+      except AttributeError:
+        return 0
     else:
       return 0
 
