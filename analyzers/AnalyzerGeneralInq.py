@@ -12,25 +12,13 @@ import TweetAnalyzer
 
 class AnalyzerGeneralInq(TweetAnalyzer.TweetAnalyzer):
   def __init__(self):
-    # Construct two lists from general_inquirer txt files
+    # Construct two tries from general_inquirer txt files
     # One contains words with claimed positive connotations, the other words with
     # claimed negative connotations
-    # ToDo: use more efficient data structure (Trie?)
-    self.pos = []
-    self.neg = []
-
-    # With block to ensure file closed properly
     # ToDo: currently only works if used in a script invoked from root directory
     # of source tree
-    with open('analyzers/general_inquirer/TAGPos.txt', 'r') as f:
-      pos = f.readlines()
-      for line in pos:
-        self.pos.append(line.split(None, 1)[0]) # Process string to append just word
-
-    with open('analyzers/general_inquirer/TAGNeg.txt', 'r') as f:
-      neg = f.readlines()
-      for line in neg:
-        self.neg.append(line.split(None, 1)[0])
+    self.pos = build_trie('analyzers/general_inquirer/TAGPos.txt')
+    self.neg = build_trie('analyzers/general_inquirer/TAGNeg.txt')
 
   def score_tweet(self, tweet):
     score = 0
@@ -39,9 +27,9 @@ class AnalyzerGeneralInq(TweetAnalyzer.TweetAnalyzer):
       words = tweet[1].split(None)
       for w in words:
         w = w.upper() # pos and neg lists are all uppercase 
-        if self.pos.count(w) > 0:
+        if self.pos.find(w):
           score += 1
-        if self.neg.count(w) > 0:
+        if self.neg.find(w):
           score -= 1
       return score
     else:
@@ -53,3 +41,40 @@ class AnalyzerGeneralInq(TweetAnalyzer.TweetAnalyzer):
       return 0
     else:
       return float(sum(scores))/n 
+
+# Given a path to a General Inquirer file builds a trie with the contained words
+def build_trie(filepath):
+  t = Trie() # new trie
+  # with block ensures file is closed properly
+  with open(filepath) as f:
+    lines = f.readlines()
+    for l in lines:
+      word = l.split(None, 1)[0] # only want first word of each line
+      t.add(word)
+  return t
+
+# Implementation of Trie
+# Used to store words in the general inq db
+# Faster than storing the words in a list
+# Modified version of James Tauber's implementation
+# http://jtauber.com/
+class Trie(object):
+  def __init__(self):
+    self.root = [False, {}]
+
+  # Adds key to the trie
+  def add(self, key):
+    curr_node = self.root
+    for ch in key:
+      curr_node = curr_node[1].setdefault(ch, [False, {}])
+    curr_node[0] = True
+
+  # Returns true if key is in the trie, false otherwise
+  def find(self, key):
+    curr_node = self.root
+    for ch in key:
+      try:
+        curr_node = curr_node[1][ch]
+      except KeyError:
+        return False
+    return curr_node[0]
